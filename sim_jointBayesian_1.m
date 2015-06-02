@@ -36,7 +36,7 @@ for i = 1 : num
     tdata = data(tind,:);
     m = size(tdata,1);
     if m > 20
-        tdata = data(1:20,:);
+        tdata = tdata(1:20,:);
         m = 20;
     end
     

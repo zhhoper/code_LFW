@@ -10,10 +10,14 @@ function [precision_intra, precision_extra] = showCurve(intra_distance, extra_di
 % intra_precision : output precision 
 % extra_precision : input precision
 
+minValue = min(min(intra_distance), min(extra_distance));
+maxValue = max(max(intra_distance), max(extra_distance));
+interValue = (maxValue - minValue)/200;
+
 if length(varargin) == 1
     thr = varargin{1};
 else
-    thr = -100:1:100;
+    thr = minValue:interValue: maxValue;
 end
 
 num = length(thr);
