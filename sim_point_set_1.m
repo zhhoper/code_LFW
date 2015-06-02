@@ -1,7 +1,8 @@
 function distance = sim_point_set_1(pair, data, label, inter_s, intra_s)
-% distance = sim_point_set(pair, data, label, A, G)
+% distance = sim_point_set_1(pair, data, label, A, G)
 %
-% This function is used to compute the point to set distance we defined
+% This function is used to compute the point to set distance we defined. We
+% require that the number of set is at most 20.
 % INPUT:
 % pair : N by 2 matrix, each row contains the index of the pair
 % data : data matrix, each row presents a data, data should be preprocessed
@@ -18,11 +19,15 @@ allG = struct;
 all_varData = struct;
 all_pvarData = struct;
 tvar = pinv(inter_s + intra_s);
+tEig = eig(inter_s + intra_s);
+tdet_var = sum(log(tEig));
 
 numFaces = 20;
 for i = 1 : numFaces
     [allF(i).data, allG(i).data] = inv_covriance(inter_s, intra_s, i);
     all_varData(i).data = (inter_s + intra_s) - i*inter_s*(allF(i).data + i*allG(i).data)*inter_s;
+    tEig = eig(all_varData(i).data);
+    all_varData(i).det = sum(log(tEig));
     all_pvarData(i).data = pinv(all_varData(i).data);
 end
 
@@ -53,15 +58,18 @@ for i = 1 : num
     G = allG(m).data;
     varData = all_varData(m).data;
     pvarData = all_pvarData(m).data;
+    detData = all_varData(m).det;
     
     tmp = sum(tdata,1);
     meanData = (inter_s*(F + m*G)*tmp')';
     
+    % wrongly computed
     distance(i) = 0.5*f1*tvar*f1' - 0.5*(f1 - meanData)*pvarData*(f1 - meanData)'...
-        + log(det(inter_s + intra_s)) - log(det(varData));
-    
+        + tdet_var - detData;
+
+    % correctly computed
 %     distance(i) = f1*tvar*f1' - (f1 - meanData)*pvarData*(f1 - meanData)'...
-%         + log(det(inter_s + intra_s)) - log(det(varData));
+%         + tdet_var - detData;
     
 end
 

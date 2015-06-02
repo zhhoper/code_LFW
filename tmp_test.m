@@ -1,6 +1,5 @@
-% for testing
+% This test file is used to do tesing on LFW
 close all;
-%clear all;
 clc;
 
 load('../LFW/lbp_WDRef.mat');
@@ -10,9 +9,9 @@ dim = 100;  % PCA reduce dimension to 2000 suggested by Joint Bayesian paper
 ind = 0;
 
 % get pca results
-if exist('pcaResult.mat', 'file') && ind
+if exist('Result_mat/pcaResult.mat', 'file') && ind
     fprintf('Loading PCA results...\n');
-    load('pcaResult.mat');
+    load('Result_mat/pcaResult.mat');
     training = pcaResult.training;
     projection = pcaResult.projection;
     meanValue = pcaResult.meanValue;

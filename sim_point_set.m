@@ -1,17 +1,26 @@
-function distance = sim_point_set(pair, data, label, inter_s, intra_s)
+function distance = sim_point_set(pair, data, label, inter_s, intra_s, numSamples)
 % distance = sim_point_set(pair, data, label, A, G)
-%
-% This function is used to compute the point to set distance we defined
+% 
+% This function is used to compute the point to set distance we defined. We
+% suppose the number of sample points in each testing set is the same so we
+% don't need to compute the determinant.
 % INPUT:
 % pair : N by 2 matrix, each row contains the index of the pair
 % data : data matrix, each row presents a data, data should be preprocessed
 % label : label for each data
 % inter_s, intra_s : used to compute the distance
+% numSamples : number of samples in the set
 % OUTPUT:
 % distance : the similarity score for every pair of data
 
 num = size(pair,1);
 distance = zeros(num,1);
+
+[F, G] = inv_covriance(inter_s, intra_s, numSamples);
+varData = inter_s + intra_s - numSamples*inter_s*(F + numSamples*G)*inter_s;
+
+pvarData = pinv(varData);
+tvar = pinv(inter_s + intra_s);
 
 for i = 1 : num
     i1 = pair(i,1);
@@ -30,15 +39,13 @@ for i = 1 : num
     end
     
     tdata = data(tind,:);
-    m = size(tdata,1);
-    
-    [F, G] = inv_covriance(inter_s, intra_s, m);
-    [meanData, varData] = getMeanVar(F, G, inter_s, intra_s, tdata, m);
-    
-    pvarData = pinv(varData);
-    tvar = pinv(inter_s + intra_s);
-    distance(i) = 0.5*f1*tvar*f1' - 0.5*(f1 - meanData)*pvarData*(f1 - meanData)'...
-        + log(det(inter_s + intra_s)) - log(det(varData));
+    m = numSamples;
+    tdata = tdata(1:m,:);
+    tmp = sum(tdata,1);
+    meanData = (inter_s*(F + m*G)*tmp')';
+
+    distance(i) = f1*tvar*f1' - (f1 - meanData)*pvarData*(f1 - meanData)';
+
 end
 
 end

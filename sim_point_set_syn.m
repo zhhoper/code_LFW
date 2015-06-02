@@ -38,19 +38,19 @@ for i = 1 : num
     end
     
     tdata = data(tind,:);
-    m = size(tdata,1);
     m = numPoints;
     tdata = tdata(1:numPoints,:);
     
     tmp = sum(tdata,1);
     meanData = (inter_s*(F + m*G)*tmp')';
     
-    distance(i) = 0.5*f1*tvar*f1' - 0.5*(f1 - meanData)*pvarData*(f1 - meanData)'...
-        + log(det(inter_s + intra_s)) - log(det(varData));
+%     distance(i) = 0.5*f1*tvar*f1' - 0.5*(f1 - meanData)*pvarData*(f1 - meanData)'...
+%         + log(det(inter_s + intra_s)) - log(det(varData));
     
 %     distance(i) = f1*tvar*f1' - (f1 - meanData)*pvarData*(f1 - meanData)'...
 %         + log(det(inter_s + intra_s)) - log(det(varData));
-    
+
+    distance(i) = f1*tvar*f1' - (f1 - meanData)*pvarData*(f1 - meanData)';
 end
 
 end
