@@ -11,13 +11,12 @@ function [inter_s, intra] = EM_update(data, label, k)
 % k : the number of guassians for intra class variable
 % OUTPUT:
 % inter_s : the inter class variance
-% intra : a structure indicating the mean and variance of each Gaussian
-% component
+% intra : a strucut of Gaussian mixture models
 
 dim = size(data,2);       % dimension of the feature
 
 % allocate the space 
-inter_s = zeros(dim);
+% inter_s = zeros(dim);
 intra = struct;
 for i = 1 : k
     intra(i).mean = zeros(1, dim);
@@ -44,28 +43,40 @@ for i = 1 : numFaces
     u_intra(tmp_index) = tmp_data - repmat(u_identity(i,:), numData,1);
 end
 
-diffMean = inf;
-diffVar = inf;
-max_ite = 10;
-thr1 = 1;
-thr2 = 1;
+inter_s = u_identity'*u_identity;
+intra = fitgmdist(u_intra, k);
 
-while diffMean > thr1 || diffVar > thr2 || count < max_ite
-    intra_old = intra;
-    
-    % using EM to update the mixture of Gaussian
-    intra = EM_mixGaussian(u_intra);
-    
-    % updating indentity and intra variables
-    
-    % compute the difference
-    diffMean = 0;
-    diffVar = 0;
-    for i = 1 : k
-        diffMean = diffMean + norm(intra(i).mean - intra_old(i).mean, 'fro');
-        diffVar = diffVar + norm(intra(i).var - intra_old(i).var, 'fro');
-    end
-    count = count + 1;
-end
+% diffMean = inf;
+% diffVar = inf;
+% max_ite = 10;
+% thr1 = 1;
+% thr2 = 1;
+% 
+% while diffMean > thr1 || diffVar > thr2 || count < max_ite
+%     intra_old = intra;
+%     
+%     % using EM to update the mixture of Gaussian
+%     intra = fitgmdist(u_intra, k);
+%     
+%     % do clustering
+%     ind = cluster(intra, u_intra);
+%     
+%     % get h
+%     for i = 1 : numFaces
+%         tmp_index = label == index_identity(i);
+%         tmpData = data(tmp_index);
+%         numData = sum(tmp_index);
+%         h = zeros(numData
+%     end
+%     
+%     % compute the difference
+%     diffMean = 0;
+%     diffVar = 0;
+%     for i = 1 : k
+%         diffMean = diffMean + norm(intra(i).mean - intra_old(i).mean, 'fro');
+%         diffVar = diffVar + norm(intra(i).var - intra_old(i).var, 'fro');
+%     end
+%     count = count + 1;
+% end
 
 end
