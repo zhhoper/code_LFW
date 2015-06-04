@@ -5,9 +5,9 @@ clc;
 load('../LFW/lbp_WDRef.mat');
 load('../LFW/id_WDRef.mat');
 
-dim = 500;  % PCA reduce dimension to 2000 suggested by Joint Bayesian paper
+dim = 100;  % PCA reduce dimension to 2000 suggested by Joint Bayesian paper
 ind = 0;
-numGaussian = 5;  % number of guassian 
+numGaussian = 3;  % number of guassian 
 
 % get pca results
 if exist('Result_mat/pcaResult.mat', 'file') && ind
@@ -30,11 +30,11 @@ if exist('variance.mat', 'file') && ind
     fprintf('Loading inter and intra variance...\n');
     load('variance.mat');
     inter_s = variance.inter_s;
-    intra_s = variance.intra_s;
+    intra = variance.intra_s;
     fprintf('Done!\n');
 else
     fprintf('Computing the inter and intra class variance...\n');
-    [inter_s, intra] = EM_update(training, label, NumGaussian);
+    [inter_s, intra] = EM_update(training, id_WDRef, numGaussian);
     fprintf('Done!\n');
 end
 
@@ -48,19 +48,23 @@ fprintf('Done!\n');
 % pre-process testing data
 data = (double(lbp_lfw) - repmat(meanValue, size(lbp_lfw, 1), 1))*projection;
 
+% process intra
+tmp = intra.Sigma + repmat(inter_s, 1,1, numGaussian);
+intra_s = gmdistribution(intra.mu, tmp, intra.PComponents);
+
 %% use joint bayesian method
 fprintf('Compute the distance for intra class...\n');
-intra_distance = sim_jointBayesian_mixture(pairlist_lfw.IntraPersonPair, data, id_lfw, inter_s, intra);
+intra_distance = sim_jointBayesian_mixture(pairlist_lfw.IntraPersonPair, data, inter_s, intra_s);
 fprintf('Done!\n');
 
 fprintf('Compute the distance for extra class...\n');
-extra_distance = sim_jointBayesian_mixture(pairlist_lfw.ExtraPersonPair, data, id_lfw, inter_s, intra);
+extra_distance = sim_jointBayesian_mixture(pairlist_lfw.ExtraPersonPair, data, inter_s, intra_s);
 fprintf('Done!\n');
 
 fprintf('Draw ROC curve...\n');
 figure;
 
 [intra_precision, extra_precision] = showCurve(intra_distance, extra_distance, 'b-', 2);
-save(sprintf('mixture_intra_precision_%d', dim), 'intra_precision');
-save(sprintf('mixture_extra_precision_%d', dim), 'extra_precision');
+save(sprintf('mixture_intra_precision_dim_%d_numGaussian_%d', dim, numGaussian), 'intra_precision');
+save(sprintf('mixture_extra_precision_dim_%d_numGaussian_%d', dim, numGaussian), 'extra_precision');
 fprintf('Done!\n');

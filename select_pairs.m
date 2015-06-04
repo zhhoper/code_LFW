@@ -26,9 +26,6 @@ for i = 1 : intra_num
     
     l2 = id_lfw(f2);
     tindex = id_lfw == l2;
-    if f2 == 855
-        ccc = 0;
-    end
     if sum(tindex) >= (numSamples + 1)
         count_intra = count_intra + 1;
         select_intra(count_intra, 1) = f1;
