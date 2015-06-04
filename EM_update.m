@@ -37,14 +37,14 @@ u_intra = -1*ones(size(data));
 % point minus the mean
 for i = 1 : numFaces
     tmp_index = label == index_identity(i);
-    tmp_data = data(tmp_index);
+    tmp_data = data(tmp_index,:);
     u_identity(i,:) = mean(tmp_data);
     numData = sum(tmp_index);
-    u_intra(tmp_index) = tmp_data - repmat(u_identity(i,:), numData,1);
+    u_intra(tmp_index,:) = tmp_data - repmat(u_identity(i,:), numData,1);
 end
 
-inter_s = u_identity'*u_identity;
-intra = fitgmdist(u_intra, k);
+inter_s = u_identity'*u_identity/numFaces;
+intra = gmdistribution.fit(u_intra, k, 'Regularize',1e-10);
 
 % diffMean = inf;
 % diffVar = inf;
