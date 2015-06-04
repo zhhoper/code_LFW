@@ -5,9 +5,9 @@ clc;
 load('../LFW/lbp_WDRef.mat');
 load('../LFW/id_WDRef.mat');
 
-dim = 100;  % PCA reduce dimension to 2000 suggested by Joint Bayesian paper
+dim = 200;  % PCA reduce dimension to 2000 suggested by Joint Bayesian paper
 ind = 0;
-numGaussian = 3;  % number of guassian 
+numGaussian = 10;  % number of guassian 
 
 % get pca results
 if exist('Result_mat/pcaResult.mat', 'file') && ind
