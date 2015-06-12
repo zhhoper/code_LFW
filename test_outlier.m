@@ -34,21 +34,21 @@ if exist('variance.mat', 'file') && ind
     fprintf('Done!\n');
 else
     fprintf('Computing the inter and intra class variance...\n');
-    [inter_s, intra_s] = get_cov(id_WDRef, training);
+    [inter_s, intra_s] = get_cov_outlier(id_WDRef, training);
     fprintf('Done!\n');
 end
 
 
-if exist('intra_s.mat','file') && exist('inter_s.mat', 'file') && ind2
-    fprintf('Loading inter and intra variance');
-    load('intra_s.mat');
-    load('inter_s.mat');
-    fprintf('Done!');
-else
-    fprintf('EM updating inter_s and intra_s...\n');
-    [inter_s, intra_s, meanMu, meanEpson] = EM_Joint(training, id_WDRef, inter_s, intra_s);
-    fprintf('Done!\n');
-end
+% if exist('intra_s.mat','file') && exist('inter_s.mat', 'file') && ind2
+%     fprintf('Loading inter and intra variance');
+%     load('intra_s.mat');
+%     load('inter_s.mat');
+%     fprintf('Done!');
+% else
+%     fprintf('EM updating inter_s and intra_s...\n');
+%     [inter_s, intra_s, meanMu, meanEpson] = EM_Joint(training, id_WDRef, inter_s, intra_s);
+%     fprintf('Done!\n');
+% end
 
 % get A and G
 fprintf('Get A and G...\n');
@@ -64,9 +64,6 @@ fprintf('Done!\n');
 
 % pre-process testing data
 data = (double(lbp_lfw) - repmat(meanValue, size(lbp_lfw, 1), 1))*projection;
-
-% further centralized the data
-data = data - repmat(meanMu + meanEpson, size(lbp_lfw, 1), 1);
 
 %% use joint bayesian method
 fprintf('Compute the distance for intra class...\n');
@@ -89,8 +86,8 @@ hold on;
 [intra_precision.max, extra_precision.max, bestmax] = showCurve(intra_distance.max, extra_distance.max, 'k--', 2);
 hold on;
 [intra_precision.normal, extra_precision.normal, bestnormal] = showCurve(intra_distance.normal, extra_distance.normal, 'm-', 2);
-save(sprintf('intra_precision_%d', dim), 'intra_precision');
-save(sprintf('extra_precision_%d', dim), 'extra_precision');
+save(sprintf('intra_precision_outlier_%d', dim), 'intra_precision');
+save(sprintf('extra_precision_outlier_%d', dim), 'extra_precision');
 fprintf('Done!\n');
 
 %% use point to set method
@@ -107,6 +104,6 @@ hold on;
 [p_s_intra_precision, p_s_extra_precision, best] = showCurve(p_s_intra, p_s_extra, 'r-', 2);
 legend(sprintf('mean: %f', bestmean), sprintf('min: %f', bestmin), ...
     sprintf('max: %f', bestmax), sprintf('normal: %f', bestnormal), sprintf('joint: %f', best));
-save(sprintf('p_s_intra_precision_%d', dim), 'p_s_intra_precision');
-save(sprintf('p_s_extra_precision_%d', dim), 'p_s_extra_precision');
+save(sprintf('p_s_intra_precision_outlier_%d', dim), 'p_s_intra_precision');
+save(sprintf('p_s_extra_precision_outlier_%d', dim), 'p_s_extra_precision');
 fprintf('Done!\n');

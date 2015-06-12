@@ -24,7 +24,7 @@ tdet_var = sum(log(tEig));
 
 numFaces = 20;
 for i = 1 : numFaces
-    [allF(i).data, allG(i).data] = inv_covriance(inter_s, intra_s, i);
+    [allF(i).data, allG(i).data] = inv_covariance(inter_s, intra_s, i);
     all_varData(i).data = (inter_s + intra_s) - i*inter_s*(allF(i).data + i*allG(i).data)*inter_s;
     tEig = eig(all_varData(i).data);
     all_varData(i).det = sum(log(tEig));
@@ -64,13 +64,14 @@ for i = 1 : num
     meanData = (inter_s*(F + m*G)*tmp')';
     
     % wrongly computed
-    distance(i) = 0.5*f1*tvar*f1' - 0.5*(f1 - meanData)*pvarData*(f1 - meanData)'...
-        + tdet_var - detData;
+%     %distance(i) = 0.5*f1*tvar*f1' - 0.5*(f1 - meanData)*pvarData*(f1 - meanData)'...
+%         + tdet_var - detData;
 
     % correctly computed
-%     distance(i) = f1*tvar*f1' - (f1 - meanData)*pvarData*(f1 - meanData)'...
-%         + tdet_var - detData;
+    distance(i) = f1*tvar*f1' - (f1 - meanData)*pvarData*(f1 - meanData)'...
+        + tdet_var - detData;
     
+    %distance(i) = f1*tvar*f1' - (f1 - meanData)*pvarData*(f1 - meanData)';
 end
 
 end

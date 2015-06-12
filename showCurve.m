@@ -1,4 +1,4 @@
-function [precision_intra, precision_extra] = showCurve(intra_distance, extra_distance, line_format, line_width, varargin)
+function [precision_intra, precision_extra, best] = showCurve(intra_distance, extra_distance, line_format, line_width, varargin)
 % [intra_precision, extra_precision] = showCurve(intra_distance, extra_distance, thr)
 %
 % function is used to draw the true positive and false positive curve
@@ -32,4 +32,5 @@ for i = 1 : num
     precision_extra(i) = sum(tmp2)/size(extra_distance,1);
 end
 plot(precision_extra, precision_intra, line_format, 'LineWidth', line_width);
+best = max(precision_intra + 1 - precision_extra)/2;
 end

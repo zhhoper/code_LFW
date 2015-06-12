@@ -8,8 +8,8 @@ numSamples = 11;   % number of samples for each class
 dim = 15;           % dimension of each data
 
 % generate data
-s_inter = 2;
-s_intra = 1;
+s_inter = 1;
+s_intra = 2;
 [label, data, inter_s, intra_s] = syntheszie_data(numClass, numSamples, dim, s_inter, s_intra);
 
 numSame = 3000;    % number of same pair
